@@ -14,19 +14,19 @@ class InputMessage extends React.Component {
 
     onSubmit(event) {
         event.preventDefault();
-        event.setState({ text: '' });
+        this.setState({ text: '' });
         this.props.onSendMessage(this.state.text);
     }
 
     render() {
         return (
             <div className="Input">
-                <form onSubmit={event => this.onSubmit(event).bind(this)}>
+                <form onSubmit={event => this.onSubmit(event)}>
                     <input
-                        onChange={event => this.onChange(event).bind(this)}
+                        onChange={event => this.onChange(event)}
                         value={this.state.text}
                         type="text"
-                        placeholder="Enter you message and press ENTER"
+                        placeholder="Enter your message and press ENTER"
                         autoFocus={true}
                     />
                     <button>Send</button>

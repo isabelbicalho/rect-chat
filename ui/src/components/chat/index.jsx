@@ -23,34 +23,48 @@ class Chat extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            messages: [
-                {
-                    text: 'This is a test message',
-                    member: {
-                        color: 'blue',
-                        username: 'bluemoon'
-                    }
-                },
-            ],
+            messages: [],
             member: {
                 username: randomName(),
                 color: randomColor()
             }
-        }
+        };
+        this.drone = new window.Scaledrone('', {
+            data: this.state.member
+        });
+        this.drone.on('open', error => {
+            if (error) {
+                return console.error(error);
+            }
+            const member = { ...this.state.member };
+            member.id = this.drone.clientId;
+            this.setState({ member });
+        });
+        const room = this.drone.subscribe("observable-room");
+        room.on('data', (data, member) => {
+            const messages = this.state.messages;
+            messages.push({member, text: data});
+            this.setState({messages});
+        });
     }
 
     onSendMessage = (message) => {
-        const messages = this.state.messages
-        messages.push({
-            text: message,
-            member: this.state.member
-        })
-        this.setState({ messages: messages })
+        // const messages = this.state.messages
+        // messages.push({
+        //     text: message,
+        //     member: this.state.member
+        // })
+        // this.setState({ messages: messages })
+        this.drone.publish({
+            room: "observable-room",
+            message
+        });
     }
 
     render() {
         return (
             <div className="Chat">
+                <div className="Chat-header"><h1>My Chat App</h1></div>
                 <Messages messages={this.state.messages} currentMember={this.state.member} />
                 <InputMessage onSendMessage={this.onSendMessage} />
             </div>
